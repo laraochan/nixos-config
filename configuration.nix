@@ -76,21 +76,22 @@ in
   # Prefer Japanese glyph variants when applications request generic fonts.
   fonts = {
     packages = with pkgs; [
+      noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
     ];
 
     fontconfig.defaultFonts = {
       sansSerif = [
-        "DejaVu Sans"
+        "Noto Sans"
         "Noto Sans CJK JP"
       ];
       serif = [
-        "DejaVu Serif"
+        "Noto Serif"
         "Noto Serif CJK JP"
       ];
       monospace = [
-        "DejaVu Sans Mono"
+        "Noto Sans Mono"
         "Noto Sans Mono CJK JP"
       ];
     };
