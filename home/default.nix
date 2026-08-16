@@ -6,6 +6,7 @@
     ./git.nix
     ./hyprland.nix
     ./vscode.nix
+    ./waybar.nix
   ];
 
   home.username = "larao";
