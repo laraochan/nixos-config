@@ -44,8 +44,32 @@ end
 -- Use only the external display while the lid is closed. Suspend like a
 -- regular laptop when no external display is connected.
 hl.bind("switch:on:Lid Switch", function()
-    if #hl.get_monitors() > 1 then
+    local monitors = hl.get_monitors()
+    if #monitors > 1 then
+        local externalDisplay = nil
+        for _, monitor in ipairs(monitors) do
+            if monitor.name ~= internalDisplay then
+                externalDisplay = monitor
+                break
+            end
+        end
+
+        -- Move every workspace off the internal panel before disabling it.
+        -- Otherwise Hyprland can leave windows attached to the disabled output.
+        if externalDisplay then
+            hl.dispatch(hl.dsp.focus({ monitor = externalDisplay.name }))
+            for _, workspace in ipairs(hl.get_workspaces()) do
+                if workspace.monitor and workspace.monitor.name == internalDisplay then
+                    hl.dispatch(hl.dsp.workspace.move({
+                        workspace = workspace.id,
+                        monitor = externalDisplay.name,
+                    }))
+                end
+            end
+        end
+
         hl.monitor({ output = internalDisplay, disabled = true })
+        hl.dispatch(hl.dsp.focus({ workspace = 1, on_current_monitor = true }))
     else
         hl.exec_cmd("systemctl suspend")
     end
@@ -320,7 +344,9 @@ hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
-    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i}))
+    -- Pull the workspace onto the focused monitor if its previous monitor was
+    -- disabled, as happens when entering clamshell mode.
+    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i, on_current_monitor = true }))
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 
