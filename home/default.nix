@@ -4,6 +4,7 @@
   imports = [
     ./git.nix
     ./hyprland.nix
+    ./vscode.nix
   ];
 
   home.username = "larao";
