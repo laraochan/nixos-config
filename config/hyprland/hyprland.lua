@@ -30,7 +30,6 @@ hl.monitor({
     scale    = "auto",
 })
 
-
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -51,10 +50,16 @@ local menu        = "hyprlauncher"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function () 
+  hl.exec_cmd("systemctl --user start hyprland-session.target")
   -- hl.exec_cmd(terminal)
   -- hl.exec_cmd("nm-applet")
   -- hl.exec_cmd("waybar & hyprpaper & firefox")
   hl.exec_cmd("fcitx5 -d")
+end)
+
+hl.on("hyprland.shutdown", function ()
+  -- Block briefly so session services can shut down before Hyprland exits.
+  os.execute("systemctl --user stop hyprland-session.target && sleep 0.1")
 end)
 
 
