@@ -4,6 +4,27 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  rosePineFcitx5 = pkgs.stdenvNoCC.mkDerivation {
+    pname = "rose-pine-fcitx5";
+    version = "unstable-2022-12-11";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "rose-pine";
+      repo = "fcitx5";
+      rev = "01c291bc4fa5095c7a7c2ab177a9efc2042c5026";
+      hash = "sha256-pNFDzsURMsNUJRz1jjyOb9uLjCtMbNuo3ARvv0rsvLg=";
+    };
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/share/fcitx5/themes
+      cp -r rose-pine rose-pine-moon rose-pine-dawn $out/share/fcitx5/themes/
+      runHook postInstall
+    '';
+  };
+in
+
 {
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
@@ -103,9 +124,11 @@
       addons = with pkgs; [
         fcitx5-mozc
         fcitx5-gtk
+        rosePineFcitx5
       ];
 
       ignoreUserConfig = true;
+      settings.addons.classicui.globalSection.Theme = "rose-pine";
       settings.inputMethod = {
         GroupOrder."0" = "Default";
 	"Groups/0" = {
