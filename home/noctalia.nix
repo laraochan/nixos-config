@@ -1,7 +1,9 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   imports = [ inputs.noctalia.homeModules.default ];
+
+  home.packages = [ pkgs.adw-gtk3 ];
 
   programs.noctalia = {
     enable = true;
@@ -20,6 +22,16 @@
         mode = "dark";
         source = "builtin";
         builtin = "Rosé Pine";
+
+        # Generate GTK CSS from the active Noctalia palette. The templates
+        # install it for both legacy GTK apps and GTK 4/libadwaita apps.
+        templates = {
+          enable_builtin_templates = true;
+          builtin_ids = [
+            "gtk3"
+            "gtk4"
+          ];
+        };
       };
 
       wallpaper = {
