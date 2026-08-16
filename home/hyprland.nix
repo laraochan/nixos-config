@@ -20,6 +20,7 @@ in
     portalPackage = null;
     configType = "lua";
     systemd.enable = true;
+    plugins = [ pkgs.hyprlandPlugins.hypr-dynamic-cursors ];
 
     extraLuaFiles."user-config" = {
       content = pkgs.replaceVars ../config/hyprland/hyprland.lua {

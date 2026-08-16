@@ -3,6 +3,7 @@
 {
   imports = [
     ./codex.nix
+    ./cursor.nix
     ./discord.nix
     ./firefox.nix
     ./gh.nix
