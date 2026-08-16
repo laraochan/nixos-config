@@ -91,6 +91,11 @@ in
   };
 
   programs.hyprland.enable = true;
+  programs.dconf.enable = true;
+
+  # Nautilus uses GVfs for trash, network locations and removable media.
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
 
   programs.noctalia-greeter = {
     enable = true;

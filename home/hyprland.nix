@@ -8,7 +8,6 @@ let
     hash = "sha256-nA/re4gWvOtH0OPqxJzp7lm8YS/qLHUhhS/6Og22TlU=";
   };
 in
-
 {
   # Start Wayland session services only while Hyprland is running. This keeps
   # Hyprland-specific services such as Noctalia out of GNOME sessions.
@@ -31,8 +30,17 @@ in
 
   # Runtime dependencies referenced by config/hyprland/hyprland.lua.
   home.packages = with pkgs; [
-    kdePackages.dolphin
+    nautilus
     wl-clipboard
   ];
 
+  xdg.mimeApps = {
+    enable = true;
+    associations.added."inode/directory" = [ "org.gnome.Nautilus.desktop" ];
+    associations.removed."inode/directory" = [ "org.kde.dolphin.desktop" ];
+    defaultApplications."inode/directory" = [ "org.gnome.Nautilus.desktop" ];
+  };
+
+  # Nautilus is a libadwaita application; request its supported dark mode.
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 }

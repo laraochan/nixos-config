@@ -141,7 +141,7 @@ hl.on("monitor.added", arrangeWorkspacesForCurrentDisplays)
 
 -- Set programs that you use
 local terminal    = "ghostty"
-local fileManager = "dolphin"
+local fileManager = "nautilus"
 
 
 -------------------
