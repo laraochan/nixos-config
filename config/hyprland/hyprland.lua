@@ -30,6 +30,37 @@ hl.monitor({
     scale    = "auto",
 })
 
+local internalDisplay = "eDP-1"
+
+local function enableInternalDisplay()
+    hl.monitor({
+        output   = internalDisplay,
+        mode     = "preferred",
+        position = "auto",
+        scale    = "auto",
+    })
+end
+
+-- Use only the external display while the lid is closed. Suspend like a
+-- regular laptop when no external display is connected.
+hl.bind("switch:on:Lid Switch", function()
+    if #hl.get_monitors() > 1 then
+        hl.monitor({ output = internalDisplay, disabled = true })
+    else
+        hl.exec_cmd("systemctl suspend")
+    end
+end, { locked = true })
+
+hl.bind("switch:off:Lid Switch", enableInternalDisplay, { locked = true })
+
+-- Restore the internal panel if the external display is unplugged while the
+-- lid is closed.
+hl.on("monitor.removed", function()
+    if #hl.get_monitors() == 0 then
+        enableInternalDisplay()
+    end
+end)
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
