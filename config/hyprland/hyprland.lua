@@ -238,6 +238,8 @@ hl.config({
 
         touchpad = {
             natural_scroll = false,
+            disable_while_typing = true,
+            tap_to_click = false,
         },
     },
 })
