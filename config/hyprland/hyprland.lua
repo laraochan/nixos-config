@@ -352,11 +352,45 @@ hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
+local function focusWorkspace(workspaceId)
+    local targetWorkspace = nil
+    for _, workspace in ipairs(hl.get_workspaces()) do
+        if workspace.id == workspaceId then
+            targetWorkspace = workspace
+            break
+        end
+    end
+
+    -- A workspace can remain assigned to an output that was disabled after a
+    -- lid or monitor change. Only in that case, recover it to the focused
+    -- monitor. Workspaces on active outputs keep their monitor assignment.
+    if targetWorkspace and targetWorkspace.monitor then
+        local targetMonitorIsActive = false
+        local focusedMonitor = nil
+        for _, monitor in ipairs(hl.get_monitors()) do
+            if monitor.name == targetWorkspace.monitor.name then
+                targetMonitorIsActive = true
+            end
+            if monitor.focused then
+                focusedMonitor = monitor
+            end
+        end
+
+        if not targetMonitorIsActive and focusedMonitor then
+            hl.dispatch(hl.dsp.workspace.move({
+                workspace = workspaceId,
+                monitor = focusedMonitor.name,
+            }))
+        end
+    end
+
+    hl.dispatch(hl.dsp.focus({ workspace = workspaceId }))
+end
+
 for i = 1, 10 do
+    local workspaceId = i
     local key = i % 10 -- 10 maps to key 0
-    -- Pull the workspace onto the focused monitor if its previous monitor was
-    -- disabled, as happens when entering clamshell mode.
-    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i, on_current_monitor = true }))
+    hl.bind(mainMod .. " + " .. key,             function() focusWorkspace(workspaceId) end)
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 
