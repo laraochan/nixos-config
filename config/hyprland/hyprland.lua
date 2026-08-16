@@ -31,6 +31,27 @@ hl.monitor({
 })
 
 local internalDisplay = "eDP-1"
+local lidStatePath = "/proc/acpi/button/lid/LID/state"
+
+local function isLidClosed()
+    local stateFile = io.open(lidStatePath, "r")
+    if not stateFile then
+        return false
+    end
+
+    local state = stateFile:read("*l") or ""
+    stateFile:close()
+    return state:match("closed") ~= nil
+end
+
+local function getExternalDisplay()
+    for _, monitor in ipairs(hl.get_monitors()) do
+        if monitor.name ~= internalDisplay then
+            return monitor
+        end
+    end
+    return nil
+end
 
 local function enableInternalDisplay()
     hl.monitor({
@@ -41,49 +62,78 @@ local function enableInternalDisplay()
     })
 end
 
+local function assignWorkspaceRange(first, last, monitor)
+    for id = first, last do
+        hl.workspace_rule({
+            workspace  = tostring(id),
+            monitor    = monitor,
+            persistent = true,
+        })
+    end
+end
+
+local function useSingleDisplay(display)
+    assignWorkspaceRange(1, 10, display)
+end
+
+local function useExtendedDisplays(externalDisplay)
+    assignWorkspaceRange(1, 5, externalDisplay)
+    assignWorkspaceRange(6, 10, internalDisplay)
+end
+
+local function useClosedLidLayout(externalDisplay)
+    useSingleDisplay(externalDisplay)
+    hl.dispatch(hl.dsp.focus({ monitor = externalDisplay }))
+    hl.monitor({ output = internalDisplay, disabled = true })
+    hl.dispatch(hl.dsp.focus({ workspace = 1 }))
+end
+
+local function arrangeWorkspacesForCurrentDisplays()
+    local externalDisplay = getExternalDisplay()
+    if externalDisplay and isLidClosed() then
+        useClosedLidLayout(externalDisplay.name)
+    elseif externalDisplay and #hl.get_monitors() > 1 then
+        useExtendedDisplays(externalDisplay.name)
+    elseif externalDisplay then
+        useSingleDisplay(externalDisplay.name)
+    else
+        useSingleDisplay(internalDisplay)
+    end
+end
+
 -- Use only the external display while the lid is closed. Suspend like a
 -- regular laptop when no external display is connected.
 hl.bind("switch:on:Lid Switch", function()
-    local monitors = hl.get_monitors()
-    if #monitors > 1 then
-        local externalDisplay = nil
-        for _, monitor in ipairs(monitors) do
-            if monitor.name ~= internalDisplay then
-                externalDisplay = monitor
-                break
-            end
-        end
-
-        -- Move every workspace off the internal panel before disabling it.
-        -- Otherwise Hyprland can leave windows attached to the disabled output.
-        if externalDisplay then
-            hl.dispatch(hl.dsp.focus({ monitor = externalDisplay.name }))
-            for _, workspace in ipairs(hl.get_workspaces()) do
-                if workspace.monitor and workspace.monitor.name == internalDisplay then
-                    hl.dispatch(hl.dsp.workspace.move({
-                        workspace = workspace.id,
-                        monitor = externalDisplay.name,
-                    }))
-                end
-            end
-        end
-
-        hl.monitor({ output = internalDisplay, disabled = true })
-        hl.dispatch(hl.dsp.focus({ workspace = 1, on_current_monitor = true }))
+    local externalDisplay = getExternalDisplay()
+    if externalDisplay then
+        useClosedLidLayout(externalDisplay.name)
     else
         hl.exec_cmd("systemctl suspend")
     end
 end, { locked = true })
 
-hl.bind("switch:off:Lid Switch", enableInternalDisplay, { locked = true })
+hl.bind("switch:off:Lid Switch", function()
+    enableInternalDisplay()
+    local externalDisplay = getExternalDisplay()
+    if externalDisplay then
+        useExtendedDisplays(externalDisplay.name)
+    else
+        useSingleDisplay(internalDisplay)
+    end
+end, { locked = true })
 
 -- Restore the internal panel if the external display is unplugged while the
 -- lid is closed.
 hl.on("monitor.removed", function()
     if #hl.get_monitors() == 0 then
         enableInternalDisplay()
+        useSingleDisplay(internalDisplay)
+    else
+        arrangeWorkspacesForCurrentDisplays()
     end
 end)
+
+hl.on("monitor.added", arrangeWorkspacesForCurrentDisplays)
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -106,6 +156,7 @@ local fileManager = "dolphin"
 hl.on("hyprland.start", function () 
   -- hl.exec_cmd(terminal)
   -- hl.exec_cmd("nm-applet")
+  arrangeWorkspacesForCurrentDisplays()
   hl.exec_cmd("fcitx5 -d")
 end)
 
@@ -338,6 +389,9 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher")
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
+hl.bind("Print",         hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("noctalia msg screenshot-region"))
+
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
@@ -348,7 +402,7 @@ hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
-    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i, on_current_monitor = true }))
+    hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i }))
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 
