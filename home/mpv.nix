@@ -15,9 +15,17 @@
 
   xdg.mimeApps = {
     enable = true;
-    defaultApplications = {
-      "video/quicktime" = [ "mpv.desktop" ];
+    associations.added = {
       "video/mp4" = [ "mpv.desktop" ];
+      "video/quicktime" = [ "mpv.desktop" ];
+      "video/webm" = [ "mpv.desktop" ];
+      "video/x-matroska" = [ "mpv.desktop" ];
+    };
+    defaultApplications = {
+      "video/mp4" = [ "mpv.desktop" ];
+      "video/quicktime" = [ "mpv.desktop" ];
+      "video/webm" = [ "mpv.desktop" ];
+      "video/x-matroska" = [ "mpv.desktop" ];
     };
   };
 }
