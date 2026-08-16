@@ -14,6 +14,7 @@
     ./noctalia.nix
     ./obsidian.nix
     ./qt.nix
+    ./spotify.nix
     ./vscode.nix
   ];
 

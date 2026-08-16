@@ -31,6 +31,7 @@ in
       "discord"
       "discord-unwrapped"
       "obsidian"
+      "spotify"
       "vscode"
     ];
 
