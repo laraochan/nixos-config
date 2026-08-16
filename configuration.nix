@@ -73,6 +73,20 @@ in
     LC_TIME = "ja_JP.UTF-8";
   };
 
+  # Prefer Japanese glyph variants when applications request generic fonts.
+  fonts = {
+    packages = with pkgs; [
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+    ];
+
+    fontconfig.defaultFonts = {
+      sansSerif = [ "Noto Sans CJK JP" ];
+      serif = [ "Noto Serif CJK JP" ];
+      monospace = [ "Noto Sans Mono CJK JP" ];
+    };
+  };
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
