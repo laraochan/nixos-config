@@ -15,6 +15,9 @@
 
   xdg.mimeApps = {
     enable = true;
-    defaultApplications."video/quicktime" = [ "mpv.desktop" ];
+    defaultApplications = {
+      "video/quicktime" = [ "mpv.desktop" ];
+      "video/mp4" = [ "mpv.desktop" ];
+    };
   };
 }
