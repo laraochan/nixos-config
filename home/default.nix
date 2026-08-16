@@ -2,10 +2,16 @@
 
 {
   imports = [
+    ./codex.nix
     ./discord.nix
+    ./firefox.nix
+    ./gh.nix
     ./git.nix
+    ./ghostty.nix
     ./hyprland.nix
+    ./neovim.nix
     ./noctalia.nix
+    ./obsidian.nix
     ./vscode.nix
   ];
 

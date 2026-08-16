@@ -30,6 +30,7 @@ in
     builtins.elem (lib.getName pkg) [
       "discord"
       "discord-unwrapped"
+      "obsidian"
       "vscode"
     ];
 
@@ -85,22 +86,11 @@ in
     packages = with pkgs; [];
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # Packages needed system-wide rather than only by the desktop user.
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-    kitty
-    neovim
-    codex
-    wl-clipboard
-    git
-    gh
   ];
 
   programs.hyprland.enable = true;
-
-  programs.firefox.enable = true;
 
   security.rtkit.enable = true;
   services.pipewire = {
