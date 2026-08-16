@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./discord.nix
     ./git.nix
     ./hyprland.nix
     ./vscode.nix

@@ -6,7 +6,11 @@
 
 {
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "vscode" ];
+    builtins.elem (lib.getName pkg) [
+      "discord"
+      "discord-unwrapped"
+      "vscode"
+    ];
 
   imports =
     [ # Include the results of the hardware scan.
