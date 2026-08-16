@@ -10,22 +10,29 @@ let
 in
 
 {
+  # Start Wayland session services only while Hyprland is running. This keeps
+  # Hyprland-specific services such as Noctalia out of GNOME sessions.
+  wayland.systemd.target = "hyprland-session.target";
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+    package = null;
+    portalPackage = null;
+    configType = "lua";
+    systemd.enable = true;
+
+    extraLuaFiles."user-config" = {
+      content = pkgs.replaceVars ../config/hyprland/hyprland.lua {
+        rosePineTheme = "${rosePineHyprland}/dist/rose-pine.lua";
+      };
+      autoLoad = true;
+    };
+  };
+
   # Runtime dependencies referenced by config/hyprland/hyprland.lua.
   home.packages = with pkgs; [
     kdePackages.dolphin
     wl-clipboard
   ];
 
-  # Bind services such as xdg-desktop-portal to the Hyprland session.
-  systemd.user.targets.hyprland-session.Unit = {
-    Description = "Hyprland session";
-    BindsTo = [ "graphical-session.target" ];
-    Wants = [ "graphical-session-pre.target" ];
-    After = [ "graphical-session-pre.target" ];
-    PropagatesStopTo = [ "graphical-session.target" ];
-  };
-
-  xdg.configFile."hypr/hyprland.lua".source = pkgs.replaceVars ../config/hyprland/hyprland.lua {
-    rosePineTheme = "${rosePineHyprland}/dist/rose-pine.lua";
-  };
 }
