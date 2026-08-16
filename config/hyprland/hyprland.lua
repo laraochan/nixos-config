@@ -150,6 +150,8 @@ hl.env("HYPRCURSOR_SIZE", "24")
 ---- LOOK AND FEEL ----
 -----------------------
 
+local rosePine = dofile("@rosePineTheme@")
+
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
@@ -159,8 +161,16 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border = {
+                colors = {
+                    rosePine.rose,
+                    rosePine.pine,
+                    rosePine.love,
+                    rosePine.iris,
+                },
+                angle = 90,
+            },
+            inactive_border = rosePine.muted,
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -184,7 +194,7 @@ hl.config({
             enabled      = true,
             range        = 4,
             render_power = 3,
-            color        = 0xee1a1a1a,
+            color        = rosePine.base,
         },
 
         blur = {

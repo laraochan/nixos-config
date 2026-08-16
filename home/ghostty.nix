@@ -1,5 +1,8 @@
 { ... }:
 
 {
-  programs.ghostty.enable = true;
+  programs.ghostty = {
+    enable = true;
+    settings.theme = "Rose Pine";
+  };
 }

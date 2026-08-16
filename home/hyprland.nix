@@ -1,5 +1,14 @@
 { pkgs, ... }:
 
+let
+  rosePineHyprland = pkgs.fetchFromGitHub {
+    owner = "rose-pine";
+    repo = "hyprland";
+    rev = "9d08f2561266783ac96d31d518c896d5059e1878";
+    hash = "sha256-nA/re4gWvOtH0OPqxJzp7lm8YS/qLHUhhS/6Og22TlU=";
+  };
+in
+
 {
   # Runtime dependencies referenced by config/hyprland/hyprland.lua.
   home.packages = with pkgs; [
@@ -16,6 +25,7 @@
     PropagatesStopTo = [ "graphical-session.target" ];
   };
 
-  xdg.configFile."hypr/hyprland.lua".source =
-    ../config/hyprland/hyprland.lua;
+  xdg.configFile."hypr/hyprland.lua".source = pkgs.replaceVars ../config/hyprland/hyprland.lua {
+    rosePineTheme = "${rosePineHyprland}/dist/rose-pine.lua";
+  };
 }

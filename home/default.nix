@@ -13,6 +13,7 @@
     ./neovim.nix
     ./noctalia.nix
     ./obsidian.nix
+    ./qt.nix
     ./vscode.nix
   ];
 
