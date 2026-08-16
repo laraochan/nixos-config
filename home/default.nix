@@ -5,8 +5,8 @@
     ./discord.nix
     ./git.nix
     ./hyprland.nix
+    ./noctalia.nix
     ./vscode.nix
-    ./waybar.nix
   ];
 
   home.username = "larao";

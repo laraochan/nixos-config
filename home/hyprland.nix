@@ -3,11 +3,7 @@
 {
   # Runtime dependencies referenced by config/hyprland/hyprland.lua.
   home.packages = with pkgs; [
-    brightnessctl
-    hyprshutdown
     kdePackages.dolphin
-    playerctl
-    wireplumber # Provides wpctl.
   ];
 
   # Bind services such as xdg-desktop-portal to the Hyprland session.

@@ -72,7 +72,6 @@
     kitty
     neovim
     codex
-    hyprlauncher
     wl-clipboard
     git
     gh
@@ -91,6 +90,9 @@
 
     pulse.enable = true;
   };
+
+  # Noctalia reads battery information through UPower.
+  services.upower.enable = true;
 
   i18n.inputMethod = {
     enable = true;
