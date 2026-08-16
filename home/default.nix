@@ -9,6 +9,7 @@
     ./git.nix
     ./ghostty.nix
     ./hyprland.nix
+    ./mpv.nix
     ./neovim.nix
     ./noctalia.nix
     ./obsidian.nix
