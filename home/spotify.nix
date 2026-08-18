@@ -1,9 +1,17 @@
 { pkgs, ... }:
 
-{
-  home.packages = [ pkgs.spotify ];
+let
+  spotify-wayland = pkgs.symlinkJoin {
+    name = "spotify-wayland";
+    paths = [ pkgs.spotify ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
 
-  # Run Spotify natively on Wayland so fractional scaling stays sharp.
-  home.sessionVariables.NIXOS_OZONE_WL = "1";
-  systemd.user.sessionVariables.NIXOS_OZONE_WL = "1";
+    postBuild = ''
+      wrapProgram $out/bin/spotify --set NIXOS_OZONE_WL 1
+    '';
+  };
+in
+{
+  # Scope native Wayland support to Spotify instead of every Electron app.
+  home.packages = [ spotify-wayland ];
 }
