@@ -126,6 +126,9 @@ end, { locked = true })
 -- lid is closed.
 hl.on("monitor.removed", function()
     if #hl.get_monitors() == 0 then
+        -- Preserve session privacy while a closed laptop has no active output.
+        -- The lock remains active when an external display is reconnected.
+        hl.exec_cmd("noctalia msg session lock")
         enableInternalDisplay()
         useSingleDisplay(internalDisplay)
     else
