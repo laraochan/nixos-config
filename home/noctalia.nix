@@ -18,6 +18,22 @@
 
       shell.launch_apps_as_systemd_services = true;
 
+      idle = {
+        pre_action_fade_seconds = 2.0;
+        behavior = {
+          lock = {
+            timeout = 600;
+            action = "lock";
+            enabled = true;
+          };
+          screen-off = {
+            timeout = 900;
+            action = "screen_off";
+            enabled = true;
+          };
+        };
+      };
+
       theme = {
         mode = "dark";
         source = "builtin";
