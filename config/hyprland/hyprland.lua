@@ -122,18 +122,23 @@ hl.bind("switch:off:Lid Switch", function()
     end
 end, { locked = true })
 
--- Restore the internal panel if the external display is unplugged while the
--- lid is closed.
+-- A removed-monitor callback can run before Hyprland has removed the output
+-- from get_monitors(). Restore the internal panel first so the session never
+-- gets stranded without a real output, then re-evaluate the settled topology.
+local displayRemovalTimer = nil
+
 hl.on("monitor.removed", function()
-    if #hl.get_monitors() == 0 then
-        -- Preserve session privacy while a closed laptop has no active output.
-        -- The lock remains active when an external display is reconnected.
+    if isLidClosed() then
         hl.exec_cmd("noctalia msg session lock")
-        enableInternalDisplay()
-        useSingleDisplay(internalDisplay)
-    else
-        arrangeWorkspacesForCurrentDisplays()
     end
+
+    enableInternalDisplay()
+    useSingleDisplay(internalDisplay)
+
+    displayRemovalTimer = hl.timer(function()
+        arrangeWorkspacesForCurrentDisplays()
+        displayRemovalTimer = nil
+    end, { timeout = 250, type = "oneshot" })
 end)
 
 hl.on("monitor.added", arrangeWorkspacesForCurrentDisplays)
