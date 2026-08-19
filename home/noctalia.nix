@@ -10,6 +10,17 @@
     systemd.enable = true;
 
     settings = {
+      accessibility.ui_scale = 1.0;
+
+      bar.main = {
+        scale = 1.5;
+
+        monitor.internal = {
+          match = "eDP-1";
+          scale = 1.0;
+        };
+      };
+
       widget.clock.format = "{:%b %d %H:%M}";
 
       shell.launch_apps_as_systemd_services = true;
