@@ -14,6 +14,7 @@
     ./neovim.nix
     ./noctalia.nix
     ./obsidian.nix
+    ./shell.nix
     ./spotify.nix
     ./vscode.nix
   ];

@@ -88,7 +88,12 @@ in
     isNormalUser = true;
     description = "larao";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
   };
+
+  # Register zsh as a valid login shell. Its user configuration lives in
+  # home/shell.nix.
+  programs.zsh.enable = true;
 
   programs.hyprland.enable = true;
   programs.dconf.enable = true;
